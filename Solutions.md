@@ -55,7 +55,7 @@ pipeline {
                     dir("app") {
                         # update application version in the package.json file with one of these release types: patch, minor or major
                         # this will commit the version update
-                        npm version minor
+                        sh "npm version minor"
 
                         # read the updated version from the package.json file
                         def packageJson = readJSON file: 'package.json'
@@ -85,9 +85,9 @@ pipeline {
         }
         stage('Build and Push docker image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')]){
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')]){
                     sh "docker build -t docker-hub-id/myapp:${IMAGE_NAME} ."
-                    sh 'echo ${PWD} | docker login -u ${USER} --password-stdin'
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
                     sh "docker push docker-hub-id/myapp:${IMAGE_NAME}"
                 }
             }
@@ -95,12 +95,12 @@ pipeline {
         stage('commit version update') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                         # git config here for the first time run
                         sh 'git config --global user.email "jenkins@example.com"'
                         sh 'git config --global user.name "jenkins"'
-
-                        sh "git remote set-url origin https://${USER}:${PWD}@https://gitlab.com/twn-devops-bootcamp/latest/08-jenkins/jenkins-exercises.git"
+                        # ensure you have a 'jenkins-jobs' branch in remote repository
+                        sh 'git remote set-url origin https://$USER:$PASS@https://gitlab.com/twn-devops-bootcamp/latest/08-jenkins/jenkins-exercises.git'
                         sh 'git add .'
                         sh 'git commit -m "ci: version bump"'
                         sh 'git push origin HEAD:jenkins-jobs'
@@ -126,7 +126,7 @@ pipeline {
 **steps:**
 ```sh
 # ssh into your droplet server
-ssh root@{server-ip-address}
+ssh -i ~/id_rsa root@{server-ip-address}
 
 # login to your docker hub registry
 docker login
