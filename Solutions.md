@@ -8,7 +8,7 @@
 
 **Create Dockerfile in the root folder of the project**
 ```sh
-FROM node:13-alpine
+FROM node:20-alpine
 
 RUN mkdir -p /usr/app
 COPY app/* /usr/app/
@@ -31,7 +31,7 @@ CMD ["node", "server.js"]
 
 **Create Jenkins Credentials**
 - Create usernamePassword credentials for docker registry called `docker-credentials`
-- Create usernamePassword credentials for git repositoriy called `gitlab-credentials`
+- Create usernamePassword credentials for git repository called `gitlab-credentials`
 
 **Configure Node Tool in Jenkins Configuration**
 - Name should be `node`, because that's how it's referenced in the below Jenkinsfile in `tools` block
@@ -55,7 +55,7 @@ pipeline {
                     dir("app") {
                         # update application version in the package.json file with one of these release types: patch, minor or major
                         # this will commit the version update
-                        npm version minor
+                        sh "npm version minor"
 
                         # read the updated version from the package.json file
                         def packageJson = readJSON file: 'package.json'
@@ -85,9 +85,9 @@ pipeline {
         }
         stage('Build and Push docker image') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')]){
+                withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')]){
                     sh "docker build -t docker-hub-id/myapp:${IMAGE_NAME} ."
-                    sh "echo ${PWD} | docker login -u ${USER} --password-stdin"
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
                     sh "docker push docker-hub-id/myapp:${IMAGE_NAME}"
                 }
             }
@@ -95,12 +95,11 @@ pipeline {
         stage('commit version update') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'USER', passwordVariable: 'PWD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'gitlab-credentials', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
                         # git config here for the first time run
                         sh 'git config --global user.email "jenkins@example.com"'
                         sh 'git config --global user.name "jenkins"'
-
-                        sh "git remote set-url origin https://${USER}:${PWD}@gitlab.com/devops-bootcamp3/node-project.git"
+                        sh 'git remote set-url origin https://$USER:$PASS@https://gitlab.com/twn-devops-bootcamp/latest/08-jenkins/jenkins-exercises.git'
                         sh 'git add .'
                         sh 'git commit -m "ci: version bump"'
                         sh 'git push origin HEAD:jenkins-jobs'
@@ -150,8 +149,8 @@ docker run -p 3000:3000 {docker-hub-id}/myapp:{image-name}
 - Extract code withing the script blocks from `increment version`, `Run tests`, `Build and Push docker image` and `commit version update` to Jenkins Shared Library
 - Configure your Jenkinsfile to use the Jenkins Shared Library project
 
-Reference the demo videos in the module for these steps. All of these is explained in detail there.
-To validate that your code is correct, execute the pipeline when done. If you get the same result as before and you have a new image in the reigstry at the end of the pipeline execution, then you have successfully completed the exercise.  
+Reference the demo videos in the module for these steps. All of this is explained in detail there.
+To validate that your code is correct, execute the pipeline when done. If you get the same result as before and you have a new image in the registry at the end of the pipeline execution, then you have successfully completed the exercise.  
 
 </details>
 
