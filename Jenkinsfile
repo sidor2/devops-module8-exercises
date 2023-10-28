@@ -29,7 +29,7 @@ pipeline {
                     packageJson.version = "${versionParts[0]}.${versionParts[1]}.${patchVersion}"
                     writeJSON file: filePath , json: packageJson
                     env.NEW_VERSION = packageJson.version
-                    sh "echo ${env.NEW_VERSION}"
+                    sh "cat ${filePath}"
                 }
             }
         }
