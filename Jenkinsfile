@@ -41,7 +41,8 @@ pipeline {
                     nextVersion = "${versionParts[0]}.${versionParts[1]}.${patchVersion}"
                     echo "Next version is ${nextVersion}"
                     packageJson.version = nextVersion
-                    echo packageJson
+                    writeJSON file: filePath, json: packageJson
+                    sh "cat ${filePath}"
                 }
             }
         }
