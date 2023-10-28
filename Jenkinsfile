@@ -30,20 +30,21 @@ pipeline {
                 script {
                     def filePath = 'app/package.json'
                     def packageJson = readJSON file: filePath
-                    println "Current version is ${packageJson}"
-                    echo "Current version is ${packageJson.version}"
-                    def versionParts = packageJson.version.split('\\.')
-                    echo "Split version is ${versionParts}"
-                    def patchVersion = versionParts[2].toInteger()
-                    patchVersion++
-                    echo "Major version " + versionParts[0]
-                    echo "Minor version " + versionParts[1]
-                    echo "New patch version " + patchVersion
-                    nextVersion = "${versionParts[0]}.${versionParts[1]}.${patchVersion}"
-                    echo "Next version is ${nextVersion}"
-                    packageJson.version = nextVersion.toString()
+
+                    echo "Current version: ${packageJson.version}"
+
+                    def (major, minor, patch) = packageJson.version.split('\\.').collect { it.toInteger() }
+
+                    patch++
+
+                    def nextVersion = "${major}.${minor}.${patch}"
+
+                    echo "Next version: ${nextVersion}"
+
+                    packageJson.version = nextVersion
                     writeJSON file: filePath, json: packageJson
-                    println "New version is ${packageJson}"
+
+                    echo "Version updated in package.json"
                 }
             }
         }
