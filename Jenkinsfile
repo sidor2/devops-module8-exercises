@@ -1,3 +1,12 @@
+#!/usr/bin/env groovy
+
+library identifier: 'jenkins-shared-library@main', retriever: modernSCM(
+        [$class: 'GitSCMSource',
+         remote: 'git@github.com:sidor2/devops-module8-jenkins-shared-lib.git',
+         credentialsId: '2c40c606-3564-4fc4-8fc2-3a89a016f089',
+        ]
+)
+
 pipeline {
     agent any
 
@@ -20,31 +29,36 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                sh 'npm install'
-                sh 'npm test'
+                dir('app'){
+                    sh 'npm install'
+                    sh 'npm test'
+                }
             }
         }
 
         stage('Increment Version') {
             steps {
                 script {
-                    def filePath = 'app/package.json'
-                    def packageJson = readJSON file: filePath
+                    dir('app'){
+                        sh 'npm version patch'
 
-                    echo "Current version: ${packageJson.version}"
+                        def packageJson = readJSON file: 'package.json'
+                        def version = packageJson.version
 
-                    def (major, minor, patch) = packageJson.version.split('\\.').collect { it.toInteger() }
+                        // set the new version as part of IMAGE_NAME
+                        env.IMAGE_NAME = "$version-$BUILD_NUMBER"
 
-                    patch++
+                    }
+                }
+            }
+        }
 
-                    def nextVersion = "${major}.${minor}.${patch}"
-
-                    echo "Next version: ${nextVersion}"
-
-                    packageJson.version = nextVersion
-                    writeJSON file: filePath, json: packageJson
-
-                    echo "Version updated in package.json"
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    buildImage "ilsoldier/devops:$env.IMAGE_NAME"
+                    dockerLogin()
+                    dockerPush "ilsoldier/devops:$env.IMAGE_NAME"
                 }
             }
         }
