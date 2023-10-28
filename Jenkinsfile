@@ -77,7 +77,7 @@ pipeline {
                         sh "git remote set-url origin git@github.com:sidor2/devops-module8-exercises.git"
                         sh 'git add .'
                         sh 'git commit -m "ci: version bump"'
-                        sh 'git push origin HEAD:jenkins-shared-lib'
+                        sh 'git push origin HEAD:feature/solutions'
                     }
                 }
             }
