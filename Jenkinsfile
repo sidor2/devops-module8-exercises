@@ -46,7 +46,7 @@ pipeline {
                         def version = packageJson.version
 
                         // set the new version as part of IMAGE_NAME
-                        env.IMAGE_NAME = "$version-$BUILD_NUMBER"
+                        env.IMAGE_NAME = "$DOCKER_IMAGE:$version-$BUILD_NUMBER"
 
                     }
                 }
@@ -56,9 +56,9 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    buildImage "ilsoldier/devops:node-app-$env.IMAGE_NAME"
+                    buildImage "ilsoldier/devops:$env.IMAGE_NAME"
                     dockerLogin()
-                    dockerPush "ilsoldier/devops:node-app-$env.IMAGE_NAME"
+                    dockerPush "ilsoldier/devops:$env.IMAGE_NAME"
                 }
             }
         }
