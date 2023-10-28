@@ -21,7 +21,7 @@ pipeline {
         stage('Increment Version') {
             steps {
                 script {
-                    def packageJson = readJSON file: 'package.json'
+                    def packageJson = readJSON file: 'app/package.json'
                     def versionParts = packageJson.version.split('\\.')
                     def patchVersion = versionParts[2].toInteger()
                     patchVersion++
