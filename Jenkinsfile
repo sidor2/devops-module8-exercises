@@ -32,7 +32,11 @@ pipeline {
                     def packageJson = readJSON file: filePath
                     echo "Current version is ${packageJson.version}"
                     def versionParts = packageJson.version.split('\\.')
-                    echo "Major version is ${versionParts}"
+                    echo "Split version is ${versionParts}"
+                    def patchVersion = versionParts[2].toInteger()
+                    patchVersion++
+                    packageJson.version = "${versionParts[0]}.${versionParts[1]}.${patchVersion}"
+                    echo "New version is ${packageJson.version}"
                 }
             }
         }
