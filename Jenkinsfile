@@ -47,25 +47,6 @@ pipeline {
                 }
             }
         }
-
-        stage('commit and push') {
-            steps {
-                script {
-                    sshagent(['2c40c606-3564-4fc4-8fc2-3a89a016f089']) {
-                        sh 'git config --global user.email "jenkins@example.com"'
-                        sh 'git config --global user.name "jenkins"'
-
-                        sh 'git status'
-                        sh 'git branch'
-                        sh 'git config --list'
-
-                        sh "git remote set-url origin git@github.com:sidor2/devops-module8-exercises.git"
-                        sh 'git add .'
-                        sh 'git commit -m "ci: version bump"'
-                        sh 'git push origin HEAD:feature/solutions'
-                    }
-                }
-            }
     }
 
     post {
