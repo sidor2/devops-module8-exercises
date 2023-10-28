@@ -23,13 +23,7 @@ pipeline {
                 script {
                     def filePath = 'app/package.json'
                     def packageJson = readJSON file: filePath
-                    def versionParts = packageJson.version.split('\\.')
-                    def patchVersion = versionParts[2].toInteger()
-                    patchVersion++
-                    packageJson.version = "${versionParts[0]}.${versionParts[1]}.${patchVersion}"
-                    writeJSON file: filePath , json: packageJson
-                    env.NEW_VERSION = packageJson.version
-                    sh "cat ${filePath}"
+                    echo "Current version is ${packageJson.version}"
                 }
             }
         }
