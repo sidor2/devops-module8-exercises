@@ -66,7 +66,9 @@ pipeline {
         stage('commit to git'){
             steps{
                 script{
-                    commitToGithub "${env.GIT_CREDENTIALS}" "devops-module8-exercises" "feature/solutions"
+                    def sshKey = "${env.GIT_CREDENTIALS}"
+                    String regular = sshKey.toString()
+                    commitToGithub regular "devops-module8-exercises" "feature/solutions"
                 }
             }
         }
