@@ -35,8 +35,9 @@ pipeline {
                     echo "Split version is ${versionParts}"
                     def patchVersion = versionParts[2].toInteger()
                     patchVersion++
-                    packageJson.version = "${versionParts[0]}.${versionParts[1]}.${patchVersion}"
-                    echo "New version is ${packageJson.version}"
+                    echo "Major version " + versionParts[0]
+                    echo "Minor version " + versionParts[1]
+                    echo "New patch version " + patchVersion
                 }
             }
         }
