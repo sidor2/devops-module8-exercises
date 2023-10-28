@@ -66,7 +66,7 @@ pipeline {
         stage('commit to git'){
             steps{
                 script{
-                    commitToGithub("2c40c606-3564-4fc4-8fc2-3a89a016f089","devops-module8-exercises","feature/solutions")
+                    commitToGithub("${GIT_CREDENTIALS}","devops-module8-exercises","feature/solutions")
                 }
             }
         }
