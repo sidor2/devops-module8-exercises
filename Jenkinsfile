@@ -30,6 +30,7 @@ pipeline {
                 script {
                     def filePath = 'app/package.json'
                     def packageJson = readJSON file: filePath
+                    println "Current version is ${packageJson}"
                     echo "Current version is ${packageJson.version}"
                     def versionParts = packageJson.version.split('\\.')
                     echo "Split version is ${versionParts}"
@@ -42,7 +43,7 @@ pipeline {
                     echo "Next version is ${nextVersion}"
                     packageJson.version = nextVersion
                     writeJSON file: filePath, json: packageJson
-                    sh "cat ${filePath}"
+                    println "New version is ${packageJson}"
                 }
             }
         }
