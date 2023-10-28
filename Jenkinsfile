@@ -18,20 +18,22 @@ pipeline {
             }
         }
 
+        stage('Run Tests') {
+            steps {
+                sh 'npm install'
+                sh 'npm test'
+            }
+        }
+
         stage('Increment Version') {
             steps {
                 script {
                     def filePath = 'app/package.json'
                     def packageJson = readJSON file: filePath
                     echo "Current version is ${packageJson.version}"
+                    def versionParts = packageJson.version.split('\\.')
+                    echo "Major version is ${versionParts}"
                 }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                sh 'npm install'
-                sh 'npm test'
             }
         }
     }
