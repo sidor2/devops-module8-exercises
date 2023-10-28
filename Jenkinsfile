@@ -41,7 +41,7 @@ pipeline {
                     echo "New patch version " + patchVersion
                     nextVersion = "${versionParts[0]}.${versionParts[1]}.${patchVersion}"
                     echo "Next version is ${nextVersion}"
-                    packageJson.version = nextVersion
+                    packageJson.version = nextVersion.toString()
                     writeJSON file: filePath, json: packageJson
                     println "New version is ${packageJson}"
                 }
