@@ -38,6 +38,8 @@ pipeline {
                     echo "Major version " + versionParts[0]
                     echo "Minor version " + versionParts[1]
                     echo "New patch version " + patchVersion
+                    nextVersion = "${versionParts[0]}.${versionParts[1]}.${patchVersion}"
+                    echo "Next version is ${nextVersion}"
                 }
             }
         }
